@@ -108,7 +108,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 3.6
-  rotateSpeed: 1.14
+  rotateSpeed: 2
   stunTime: 1.2
   spearClose: 0
 --- !u!54 &287487216319081479

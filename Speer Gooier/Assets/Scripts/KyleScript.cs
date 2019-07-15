@@ -4,66 +4,65 @@ using UnityEngine.Accessibility;
 
 public class KyleScript : MonoBehaviour
 {
+    //TWEAKABLES
     public float moveSpeed;
     public float rotateSpeed;
     public float stunTime = 2.0f;
 
 
+    //INTERNAL STATE TRACKERS
     private float oldMoveSpeed;
     private float oldStunTime;
-    private float spearSpeed;
     private float distanceSpearTarget;
-
-    public bool spearClose;
+    private bool spearClose;
     private bool spearHit;
     private bool dead = false;
     private bool vision = false;
     private bool stunTimer;
 
+    //CACHING
+    private GameObject player;
+    private GameObject spear;
+
+
+    private void Start()
+    {
+        player = GameObject.FindGameObjectWithTag("Player");
+        spear = GameObject.FindGameObjectWithTag("Spear");
+    }
+
+
 
 
     void Update()
     {
-        Vector3 targetDir = GameObject.FindGameObjectWithTag("Player").transform.position - transform.position;
         float step = rotateSpeed * Time.deltaTime;
+        Vector3 targetDir = player.transform.position - transform.position;
         Vector3 newDir = Vector3.RotateTowards(transform.forward, targetDir, step, 0.0f);
-        distanceSpearTarget =
-            Vector3.Distance(GameObject.FindGameObjectWithTag("Spear").transform.position + new Vector3(0, 0, 1f),
-                transform.position);
-            
+        if (spear == null)
+        {
+            spear = GameObject.FindGameObjectWithTag("Spear");
+        }
+        distanceSpearTarget = Vector3.Distance(spear.transform.position + new Vector3(0, 0, 1f), transform.position);
+
 
         if (distanceSpearTarget <= 2)
         {
-            spearClose = true;
+            GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
         }
         else
         {
-            spearClose = false;
+            GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
         }
 
 
-        if (spearHit == true)
+        if (!dead && vision)
         {
-            dead = true;
-            GetComponent<Rigidbody>().isKinematic = false;
+            transform.rotation = Quaternion.LookRotation(newDir);
+            transform.position = Vector3.MoveTowards(transform.position, player.transform.position, Time.deltaTime * moveSpeed);
         }
-        else
-        {
-            if (spearClose == true)
-            {
-                GetComponent<Rigidbody>().isKinematic = false;
-            }
-            else
-            {
-                GetComponent<Rigidbody>().isKinematic = true;
-            }
-            
-            if (vision == true && dead != true)
-            {
-                transform.rotation = Quaternion.LookRotation(newDir);
-                transform.position = Vector3.MoveTowards(transform.position, GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>().position, Time.deltaTime * moveSpeed);
-            }
-        }
+
+
 
         if (stunTimer == true)
         {
@@ -83,7 +82,7 @@ public class KyleScript : MonoBehaviour
         // geeft aan of de target geraakt is
         if (other.gameObject.tag == "Spear")
         {
-            spearHit = true;
+            dead = true;
         }
 
         if (other.gameObject.tag == "stone")

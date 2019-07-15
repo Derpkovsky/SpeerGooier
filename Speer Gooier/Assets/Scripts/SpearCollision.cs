@@ -5,17 +5,26 @@ using UnityEngine;
 
 public class SpearCollision : MonoBehaviour
 {
-
-    public GameObject spearObject;
-    public Rigidbody spear;
+    //STATE TRACKING
     public bool playerCloseEnough = false;
-    public bool vincentHit;
 
-    private Vector3 scale;
+    //CACHING
+    private GameObject player;
+    private ThrowSpear throwSpearScript;
+
+
+    private void Start()
+    {
+        player = GameObject.FindGameObjectWithTag("Player");
+        throwSpearScript = GameObject.Find("speerspawn").GetComponent<ThrowSpear>();
+    }
+
+
+
 
     private void Update()
     {
-        if (Vector3.Distance(spearObject.transform.position, GameObject.Find("FPSController").GetComponent<Transform>().position) < 4)
+        if (Vector3.Distance(transform.position, player.transform.position) < 4)
         {
             playerCloseEnough = true;
         }
@@ -24,7 +33,6 @@ public class SpearCollision : MonoBehaviour
             playerCloseEnough = false;
         }
     }
-
     
 
     //Zorgt dat de speer stilstaat als hij een StickWall raakt
@@ -32,19 +40,20 @@ public class SpearCollision : MonoBehaviour
     {
         if ( other.gameObject.tag == "target")
         {
-            spear.isKinematic = true;
+            GetComponent<Rigidbody>().isKinematic = true;
             transform.SetParent(other.gameObject.transform);
-            //transform.rotation = GameObject.FindGameObjectWithTag("Player").GetComponent<ThrowSpear>().spearRotation;
+            //transform.rotation = player.GetComponent<ThrowSpear>().spearRotation;
         }
 
         if (other.gameObject.tag == "stickWall")
         {
-            spear.isKinematic = true;
-            transform.rotation = GameObject.Find("speerspawn").GetComponent<ThrowSpear>().spearRotation;
+            GetComponent<Rigidbody>().isKinematic = true;
+            transform.rotation = throwSpearScript.spearRotation;
         }
-        if (other.gameObject.tag == "Vincent")
+
+        if (other.gameObject.tag == "Terrain")
         {
-            vincentHit = true;
+
         }
     }
 }

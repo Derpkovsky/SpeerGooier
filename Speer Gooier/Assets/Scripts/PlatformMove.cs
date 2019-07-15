@@ -4,27 +4,33 @@ using UnityEngine;
 
 public class PlatformMove : MonoBehaviour
 {
-    public Transform platform;
+    //TWEAKABLES
     public float maxRight;
     public float maxLeft;
     public float moveSpeed;
+
+    //STATE TRACKERS
     private float oldPlatformPos;
     private float oldMoveSpeed;
 
+
+
+
+
     void Start()
     {
-        oldPlatformPos = platform.position.x;
+        oldPlatformPos = transform.position.x;
         oldMoveSpeed = moveSpeed;
     }
 
     void Update()
     {
-        platform.position += transform.right * moveSpeed * Time.deltaTime;
-        if (platform.position.x - oldPlatformPos > maxRight)
+        transform.position += transform.right * moveSpeed * Time.deltaTime;
+        if (transform.position.x - oldPlatformPos > maxRight)
         {
             moveSpeed = moveSpeed * -1;
         }
-        if (platform.position.x - oldPlatformPos < -maxLeft)
+        if (transform.position.x - oldPlatformPos < -maxLeft)
         {
             moveSpeed = moveSpeed * -1;
         }

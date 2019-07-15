@@ -5,34 +5,45 @@ using UnityStandardAssets.Characters.FirstPerson;
 
 public class ThrowSpear : MonoBehaviour
 {
+    //PUBLIC TWEAKABLES
     public float throwSpeed;
     public float recallSpeed;
     public float jumpThreshold;
     public float boostJump;
-    public Quaternion spearRotation;
-    public GameObject spear;
 
-
+    //INTERNAL STATE TRACKERS
     private int spearAmount;
     private bool leftDown;
     private bool Rdown;
     private float jumpTimer;
     private float oldJump;
-    private Rigidbody playerBody;
-    private FirstPersonController controller;
+    [HideInInspector]
+    public Quaternion spearRotation;
+
+    //CACHING
+    private GameObject player;
+    private GameObject playerCamera;
+    public GameObject spearInstantiator;
+    private GameObject spear;
     private Transform pivot;
+    private FirstPersonController controller;
 
 
     void Start()
     {
-        playerBody = GameObject.FindGameObjectWithTag("Player").GetComponent<Rigidbody>();
-        GameObject spearObject = (GameObject)Instantiate(spear, transform.position, transform.rotation);
+        GameObject spearObject = (GameObject)Instantiate(spearInstantiator, transform.position, transform.rotation);
+        player = GameObject.FindGameObjectWithTag("Player");
+        playerCamera = GameObject.FindGameObjectWithTag("MainCamera");
         spear = GameObject.FindGameObjectWithTag("Spear");
         controller = GameObject.Find("FPSController").GetComponent<FirstPersonController>();
+        pivot = GameObject.FindGameObjectWithTag("Spear").transform.GetChild(0).transform;
         oldJump = controller.m_JumpSpeed;
         SpearHold();
-        pivot = GameObject.FindGameObjectWithTag("Spear").transform.GetChild(0).transform;
     }
+
+
+
+
 
 
     void Update()
@@ -46,7 +57,6 @@ public class ThrowSpear : MonoBehaviour
         {
             SpearThrow();
         }
-
         if (Input.GetKey("r"))  
         {
             RecallSpear();
@@ -55,20 +65,18 @@ public class ThrowSpear : MonoBehaviour
         {
             spear.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
         }
-
         if (Input.GetKeyUp("q") && spear.GetComponent<SpearCollision>().playerCloseEnough == true)
         {
             SpearHold();
         }
 
 
-
-
         //BOOSTJUMP
-        if (Input.GetKey(KeyCode.M) &&
-            spear.GetComponent<SpearCollision>().playerCloseEnough &&
-            spear.transform.parent == null &&
-            spear.GetComponent<Rigidbody>().isKinematic
+        if (
+                Input.GetKey(KeyCode.M) &&
+                spear.GetComponent<SpearCollision>().playerCloseEnough &&
+                spear.transform.parent == null &&
+                spear.GetComponent<Rigidbody>().isKinematic
             )
         {
             jumpTimer += 1 * Time.deltaTime;

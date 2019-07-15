@@ -3,12 +3,13 @@ using UnityEngine.UI;
 
 public class VictoryUI : MonoBehaviour
 {
-    public Text VictoryText;
+    private Text VictoryText;
     private bool victory;
 
     void Start()
     {
-        victory = GameObject.Find("Exit").GetComponent<VictoryTrigger>().Victorybool;
+        victory = GameObject.FindGameObjectWithTag("Finish").GetComponent<VictoryTrigger>().Victorybool;
+        VictoryText = GameObject.Find("VictoryText").GetComponent<Text>();
     }
 
     void Update()
@@ -23,14 +24,18 @@ public class VictoryUI : MonoBehaviour
         {
             VictoryText.text = "";
         }
-
-        if (GameObject.FindGameObjectWithTag("Spear").GetComponent<SpearCollision>().vincentHit == true)
-        {
-            VictoryText.text = "auw!";
-        }
-        else
-        {
-            VictoryText.text = "";
-        }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
